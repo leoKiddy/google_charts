@@ -1,0 +1,62 @@
+<script src="https://www.google.com/jsapi"></script>
+<script>
+    
+//old version is commented out - it works fine , but do not allow 2-nd Y axes -->
+      //google.load("visualization", "1.1", {packages:["corechart", "scatter"]});
+      google.load("visualization", "1.1", {packages:["scatter"]});
+      google.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+          var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Date');
+          data.addColumn('number', 'Exp');
+          data.addColumn('number', 'Cry');
+// This part is server-side generated DataTable ------------- 
+          data.addRows([
+            {% for h in object.exphistory_set.all %}
+                [new Date('{{ h.t.isoformat}}'), {{ h.exp }}, null ] ,
+            {% endfor %}
+            {% for h in object.cryhistory_set.all %}
+                [new Date('{{ h.t.isoformat}}'), null, {{ h.cry }} ] ,
+            {% endfor %}
+          ]);
+//------------------------------------------------------------
+          var options = {
+            title: 'Cry and Exp',
+            hAxis: {
+            	title: 'Date', 
+            	format: 'dd.MM'
+            },
+  
+// This two settings do not give any affect in Material ScatterCharts.  :(
+            'pointSize': 3,
+            'lineWidth': 1,
+//--------------------------------------------------------------------- :(
+            series: {
+              0: {axis: 'Exp'},
+              1: {axis: 'Cry'}
+            },
+            axes: {
+              y: {
+                'Опыт': {label: 'Exp'},
+                'Кристаллы': {label: 'Cry'}
+              }
+            }
+          };
+//old version is commented out - it works fine , but do not allow 2-nd Y axes
+//          var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+          var chartNew = new google.charts.Scatter(document.getElementById('chart_New'));
+
+//old version is commented out - it works fine , but do not allow 2-nd Y axes
+//          chart.draw(data, options);
+          chartNew.draw(data, google.charts.Scatter.convertOptions(options));
+
+        }      
+      </script>
+
+    <div id="dashboard_div">
+      <div id="filter_div"></div>
+      <div id="chart_div"></div>
+      <div id="chart_New"></div>
+    </div>
+</details>
